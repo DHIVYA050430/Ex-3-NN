@@ -1,7 +1,7 @@
-<H3>ENTER YOUR NAME: DIVYA E</H3>
-<H3>ENTER YOUR REGISTER NO:212223230050</H3>
+<H3>ENTER YOUR NAME : DIVYA E<H3>
+<H3>ENTER YOUR REGISTER NO. 212223230050</H3>
 <H3>EX. NO.3</H3>
-<H3>DATE:12-04-2025</H3>
+<H3>DATE: 14/04/2025</H3>
 <H2 aligh = center> Implementation of MLP for a non-linearly separable data</H2>
 <h3>Aim:</h3>
 To implement a perceptron for classification using Python
@@ -37,78 +37,74 @@ Step 4 : Test for the XOR patterns.
 
 <H3>Program:</H3>
 
-
-1.importing packages:
 ```
 import numpy as np
+import pandas as pd  
 import matplotlib.pyplot as plt
-```
 
-2.model initialization:
-
-```
-x=np.array([[0,0],[0,1],[1,0],[1,1]])
-y=np.array([[0],[1],[1],[0]])
-
-input_size=2
-hidden_layer=3
-output_size=1
-
-w1=np.random.randn(input_size,hidden_layer)
-b1=np.zeros((1,hidden_layer))
-w2=np.random.randn(hidden_layer,output_size)
-b2=np.zeros((1,output_size))
-
-def sigmoid_function(x):
-  return 1/(1+np.exp(-x))
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
 def sigmoid_derivative(x):
-  return x*(1-x)
+    return x * (1 - x)
 
-```
+X = np.array([[0, 0],
+              [0, 1],
+              [1, 0],
+              [1, 1]])
 
+y = np.array([[0], [1], [1], [0]])
 
-model mechanism:
-```
-losses=[]
+np.random.seed(42)
 
-for epochs in range(10000):
-  hidden_input=np.dot(x,w1)+b1
-  hidden_output=sigmoid_function(hidden_input)
-  output_layer_input=np.dot(hidden_output,w2)+b2
-  output=sigmoid_function(output_layer_input)
+input_layer_neurons = 2
+hidden_layer_neurons = 2
+output_neurons = 1
 
-  error=y-output
-  loss=np.mean(error**2)
-  losses.append(loss)
+hidden_weights = np.random.uniform(size=(input_layer_neurons, hidden_layer_neurons))
+hidden_bias = np.random.uniform(size=(1, hidden_layer_neurons))
+output_weights = np.random.uniform(size=(hidden_layer_neurons, output_neurons))
+output_bias = np.random.uniform(size=(1, output_neurons))
 
-  d_out=error*sigmoid_derivative(output)
-  d_hidden=np.dot(d_out, w2.T)*sigmoid_derivative(hidden_output)
+lr = 0.1
+epochs = 10000
+losses = []
 
-  w2 += np.dot(hidden_output.T, d_out) * 0.1
-  b2 += np.sum(d_out, axis=0, keepdims=True) * 0.1
+for epoch in range(epochs):
+    hidden_layer_input = np.dot(X, hidden_weights) + hidden_bias
+    hidden_layer_output = sigmoid(hidden_layer_input)
 
-  w1 += np.dot(x.T, d_hidden) * 0.1
-  b1 += np.sum(d_hidden, axis=0, keepdims=True) * 0.1
+    final_input = np.dot(hidden_layer_output, output_weights) + output_bias
+    final_output = sigmoid(final_input)
 
-for v,out in zip(x,output):
-  print(f"Input: {v}, Output: {np.round(out)}")
-```
-```
+    error = y - final_output
+    losses.append(np.mean(np.square(error)))
+
+    d_output = error * sigmoid_derivative(final_output)
+    error_hidden_layer = d_output.dot(output_weights.T)
+    d_hidden_layer = error_hidden_layer * sigmoid_derivative(hidden_layer_output)
+
+    output_weights += hidden_layer_output.T.dot(d_output) * lr
+    output_bias += np.sum(d_output, axis=0, keepdims=True) * lr
+    hidden_weights += X.T.dot(d_hidden_layer) * lr
+    hidden_bias += np.sum(d_hidden_layer, axis=0, keepdims=True) * lr
+
+print("Final Output After Training:")
+
+final_output_df = pd.DataFrame(final_output.round(3), columns=['Output'], index=['Input 1', 'Input 2', 'Input 3', 'Input 4'])
+
+display(final_output_df)
+
 plt.plot(losses)
-plt.title("Loss Curve")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.grid(True)
+plt.title("Loss Over Epochs")
+plt.xlabel("Epochs")
+plt.ylabel("Mean Squared Error")
+plt.grid()
 plt.show()
 ```
 <H3>Output:</H3>
 
-![alt text](image.png)
-
-![alt text](image-1.png)
+![image](https://github.com/user-attachments/assets/0fa25e23-1bd6-47da-a3ae-1da33c0088bb)
 
 <H3> Result:</H3>
-Thus, XOR classification problem can be solved using MLP in Python.
-
-
+Thus, XOR classification problem can be solved using MLP in Python 
